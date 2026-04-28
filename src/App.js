@@ -13,6 +13,7 @@ import Register from './pages/Register';
 import Teachers from './pages/Teachers';
 import Assignments from './pages/Assignments';
 import AssignmentSubmissions from './pages/AssignmentSubmissions';
+import Leaderboard from './pages/Leaderboard';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
@@ -54,6 +55,9 @@ const App = () => {
           } />
           <Route path="/assignments/:id/submissions" element={
             <ProtectedRoute><AssignmentSubmissions /></ProtectedRoute>
+          } />
+          <Route path="/leaderboard" element={
+            <ProtectedRoute><Leaderboard /></ProtectedRoute>
           } />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/" />} />

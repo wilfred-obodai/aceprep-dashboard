@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaHome, FaUsers, FaChartBar, FaSignOutAlt, FaClipboardList, FaChalkboardTeacher, FaBook } from 'react-icons/fa';
+import { FaHome, FaUsers, FaChartBar, FaSignOutAlt, FaClipboardList, FaChalkboardTeacher, FaBook, FaTrophy } from 'react-icons/fa';
 
 const Sidebar = () => {
   const { logout, user } = useAuth();
@@ -13,6 +13,7 @@ const Sidebar = () => {
   { path: '/grades',       label: 'Grades',      icon: <FaChartBar /> },
   { path: '/exams',        label: 'Exams',       icon: <FaClipboardList /> },
   { path: '/assignments',  label: 'Assignments', icon: <FaBook /> },
+  { path: '/leaderboard',   label: 'Leaderboard', icon: <FaTrophy /> },
   { path: '/teachers',     label: 'Teachers',    icon: <FaChalkboardTeacher /> },
 ];
 

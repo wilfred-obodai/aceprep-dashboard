@@ -39,4 +39,10 @@ export const getSchoolAssignments = ()  => API.get('/assignments/school');
 export const getSubmissions    = (id)   => API.get(`/assignments/${id}/submissions`);
 export const gradeSubmission   = (id, data) => API.post(`/assignments/submissions/${id}/grade`, data);
 
+// ── Leaderboard ───────────────────────────────
+export const getMyRank    = () => API.get('/leaderboard/my-rank');
+
+// ── Streaks ───────────────────────────────────
+export const getMyStreak  = () => API.get('/streaks/mine');
+
 export default API;
