@@ -20,9 +20,14 @@ const StudentProfile = () => {
   const { id }     = useParams();
   const navigate   = useNavigate();
   const { token }  = useAuth();
-  const [data,     setData]    = useState(null);
-  const [loading,  setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
+  const [data,         setData]         = useState(null);
+  const [loading,      setLoading]      = useState(true);
+  const [downloading,  setDownloading]  = useState(false);
+  const [sending,      setSending]      = useState(false);
+  const [sendMsg,      setSendMsg]      = useState('');
+  const [showEmailForm,setShowEmailForm]= useState(false);
+  const [parentEmail,  setParentEmail]  = useState('');
+  const [parentName,   setParentName]   = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,6 +63,42 @@ const StudentProfile = () => {
       alert('Failed to download report card. Please try again.');
     } finally {
       setDownloading(false);
+    }
+  };
+
+  const sendToParent = async () => {
+    if (!parentEmail) return;
+    setSending(true);
+    setSendMsg('');
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/report-card/${id}/send-email`,
+        {
+          method:  'POST',
+          headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            parentEmail,
+            parentName,
+            academicYear: '2026'
+          })
+        }
+      );
+      const resData = await res.json();
+      if (resData.success) {
+        setSendMsg('✅ Report card sent to parent successfully!');
+        setShowEmailForm(false);
+        setParentEmail('');
+        setParentName('');
+      } else {
+        setSendMsg(`❌ ${resData.message}`);
+      }
+    } catch (e) {
+      setSendMsg('❌ Failed to send email. Please try again.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -104,15 +145,79 @@ const StudentProfile = () => {
               {student.level} Year {student.yearGroup} &nbsp;|&nbsp;
               Class {student.className || '—'}
             </p>
-            {/* Download Report Card Button */}
-            <button
-              style={styles.reportBtn}
-              onClick={downloadReportCard}
-              disabled={downloading}
-            >
-              {downloading ? '⏳ Generating PDF...' : '📄 Download Report Card PDF'}
-            </button>
+
+            {/* Action Buttons */}
+            <div style={styles.actionBtns}>
+              <button
+                style={styles.reportBtn}
+                onClick={downloadReportCard}
+                disabled={downloading}
+              >
+                {downloading ? '⏳ Generating...' : '📄 Download Report Card'}
+              </button>
+
+              <button
+                style={styles.emailBtn}
+                onClick={() => { setShowEmailForm(!showEmailForm); setSendMsg(''); }}
+              >
+                📧 Send to Parent
+              </button>
+            </div>
+
+            {/* Email Form */}
+            {showEmailForm && (
+              <div style={styles.emailForm}>
+                <p style={styles.emailFormTitle}>Send Report Card to Parent/Guardian</p>
+                <input
+                  style={styles.emailInput}
+                  type="text"
+                  placeholder="Parent/Guardian Name (Optional)"
+                  value={parentName}
+                  onChange={e => setParentName(e.target.value)}
+                />
+                <input
+                  style={styles.emailInput}
+                  type="email"
+                  placeholder="Parent/Guardian Email *"
+                  value={parentEmail}
+                  onChange={e => setParentEmail(e.target.value)}
+                />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    style={{
+                      ...styles.emailSendBtn,
+                      opacity: !parentEmail || sending ? 0.6 : 1,
+                      flex: 1,
+                    }}
+                    onClick={sendToParent}
+                    disabled={!parentEmail || sending}
+                  >
+                    {sending ? '⏳ Sending...' : '📤 Send Report Card'}
+                  </button>
+                  <button
+                    style={styles.cancelBtn}
+                    onClick={() => { setShowEmailForm(false); setSendMsg(''); }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Send Message */}
+            {sendMsg && (
+              <p style={{
+                fontSize:   13,
+                marginTop:  8,
+                color:      sendMsg.includes('✅') ? '#27AE60' : '#E74C3C',
+                fontWeight: 'bold',
+              }}>
+                {sendMsg}
+              </p>
+            )}
           </div>
+
+          {/* Overall Grade */}
           <div style={{
             ...styles.overallGrade,
             background: gc.bg,
@@ -195,43 +300,49 @@ const StudentProfile = () => {
             </table>
           )}
         </div>
-
       </div>
     </div>
   );
 };
 
 const styles = {
-  layout:       { display: 'flex', minHeight: '100vh', background: '#f0f4f8' },
-  main:         { marginLeft: 240, flex: 1, padding: '32px 28px' },
-  loading:      { textAlign: 'center', color: '#888', padding: 40 },
-  backBtn:      { background: 'none', border: '1px solid #ddd', borderRadius: 6, padding: '8px 16px', fontSize: 14, color: '#555', marginBottom: 24, cursor: 'pointer' },
-  profileCard:  { background: '#fff', borderRadius: 12, padding: 28, display: 'flex', alignItems: 'center', gap: 24, marginBottom: 32, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  avatar:       { width: 70, height: 70, borderRadius: '50%', background: '#2E86AB', color: '#fff', fontSize: 28, fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  profileInfo:  { flex: 1 },
-  studentName:  { fontSize: 22, fontWeight: 'bold', color: '#1A5276', margin: '0 0 6px' },
-  studentMeta:  { fontSize: 14, color: '#888', marginBottom: 12 },
-  reportBtn:    { background: 'linear-gradient(135deg, #27AE60, #1E8449)', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 'bold', cursor: 'pointer' },
-  overallGrade: { textAlign: 'center', borderRadius: 12, padding: '16px 24px', flexShrink: 0 },
-  gradeLabel:   { fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase', margin: 0 },
-  gradeLetter:  { fontSize: 40, fontWeight: 'bold', lineHeight: 1.2, margin: 0 },
-  gradeAvg:     { fontSize: 14, fontWeight: 'bold', margin: 0 },
-  sectionTitle: { fontSize: 18, color: '#1A5276', fontWeight: 'bold', marginBottom: 16 },
-  subjectCards: { display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 32 },
-  subjectCard:  { background: '#fff', borderRadius: 10, padding: '16px 20px', minWidth: 160, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', textAlign: 'center' },
-  subjectName:  { fontSize: 13, color: '#555', marginBottom: 8, fontWeight: 'bold' },
-  subjectGrade: { fontSize: 32, fontWeight: 'bold', margin: 0 },
-  subjectAvg:   { fontSize: 14, color: '#888', marginTop: 4 },
-  subjectCount: { fontSize: 12, color: '#aaa', marginTop: 2 },
-  section:      { background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
-  empty:        { textAlign: 'center', color: '#888', padding: 40 },
-  table:        { width: '100%', borderCollapse: 'collapse' },
-  thead:        { background: '#EAF4FB' },
-  th:           { padding: '12px 16px', textAlign: 'left', fontSize: 13, color: '#1A5276', fontWeight: 'bold', borderBottom: '2px solid #2E86AB' },
-  tr:           { borderBottom: '1px solid #f0f0f0' },
-  td:           { padding: '12px 16px', fontSize: 14, color: '#333' },
-  typeBadge:    { background: '#EAF4FB', color: '#2E86AB', padding: '3px 8px', borderRadius: 4, fontSize: 12 },
-  gradeBadge:   { padding: '4px 12px', borderRadius: 20, fontSize: 13, fontWeight: 'bold' },
+  layout:        { display: 'flex', minHeight: '100vh', background: '#f0f4f8' },
+  main:          { marginLeft: 240, flex: 1, padding: '32px 28px' },
+  loading:       { textAlign: 'center', color: '#888', padding: 40 },
+  backBtn:       { background: 'none', border: '1px solid #ddd', borderRadius: 6, padding: '8px 16px', fontSize: 14, color: '#555', marginBottom: 24, cursor: 'pointer' },
+  profileCard:   { background: '#fff', borderRadius: 12, padding: 28, display: 'flex', alignItems: 'flex-start', gap: 24, marginBottom: 32, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
+  avatar:        { width: 70, height: 70, borderRadius: '50%', background: '#2E86AB', color: '#fff', fontSize: 28, fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  profileInfo:   { flex: 1 },
+  studentName:   { fontSize: 22, fontWeight: 'bold', color: '#1A5276', margin: '0 0 6px' },
+  studentMeta:   { fontSize: 14, color: '#888', marginBottom: 12 },
+  actionBtns:    { display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 8 },
+  reportBtn:     { background: 'linear-gradient(135deg, #27AE60, #1E8449)', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 'bold', cursor: 'pointer' },
+  emailBtn:      { background: 'linear-gradient(135deg, #8E44AD, #6C3483)', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontSize: 13, fontWeight: 'bold', cursor: 'pointer' },
+  emailForm:     { background: '#f8f9fa', borderRadius: 10, padding: 16, marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10, border: '1px solid #eee' },
+  emailFormTitle:{ fontSize: 14, fontWeight: 'bold', color: '#1A5276', margin: 0 },
+  emailInput:    { padding: '10px 12px', border: '1px solid #ddd', borderRadius: 8, fontSize: 14 },
+  emailSendBtn:  { background: 'linear-gradient(135deg, #8E44AD, #6C3483)', color: '#fff', border: 'none', borderRadius: 8, padding: '10px', fontSize: 14, fontWeight: 'bold', cursor: 'pointer' },
+  cancelBtn:     { background: '#fff', border: '1px solid #ddd', borderRadius: 8, padding: '10px 16px', fontSize: 14, color: '#555', cursor: 'pointer' },
+  overallGrade:  { textAlign: 'center', borderRadius: 12, padding: '16px 24px', flexShrink: 0 },
+  gradeLabel:    { fontSize: 12, fontWeight: 'bold', textTransform: 'uppercase', margin: 0 },
+  gradeLetter:   { fontSize: 40, fontWeight: 'bold', lineHeight: 1.2, margin: 0 },
+  gradeAvg:      { fontSize: 14, fontWeight: 'bold', margin: 0 },
+  sectionTitle:  { fontSize: 18, color: '#1A5276', fontWeight: 'bold', marginBottom: 16 },
+  subjectCards:  { display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 32 },
+  subjectCard:   { background: '#fff', borderRadius: 10, padding: '16px 20px', minWidth: 160, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', textAlign: 'center' },
+  subjectName:   { fontSize: 13, color: '#555', marginBottom: 8, fontWeight: 'bold' },
+  subjectGrade:  { fontSize: 32, fontWeight: 'bold', margin: 0 },
+  subjectAvg:    { fontSize: 14, color: '#888', marginTop: 4 },
+  subjectCount:  { fontSize: 12, color: '#aaa', marginTop: 2 },
+  section:       { background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' },
+  empty:         { textAlign: 'center', color: '#888', padding: 40 },
+  table:         { width: '100%', borderCollapse: 'collapse' },
+  thead:         { background: '#EAF4FB' },
+  th:            { padding: '12px 16px', textAlign: 'left', fontSize: 13, color: '#1A5276', fontWeight: 'bold', borderBottom: '2px solid #2E86AB' },
+  tr:            { borderBottom: '1px solid #f0f0f0' },
+  td:            { padding: '12px 16px', fontSize: 14, color: '#333' },
+  typeBadge:     { background: '#EAF4FB', color: '#2E86AB', padding: '3px 8px', borderRadius: 4, fontSize: 12 },
+  gradeBadge:    { padding: '4px 12px', borderRadius: 20, fontSize: 13, fontWeight: 'bold' },
 };
 
 export default StudentProfile;

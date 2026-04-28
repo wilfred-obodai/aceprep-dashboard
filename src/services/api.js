@@ -45,4 +45,6 @@ export const getMyRank    = () => API.get('/leaderboard/my-rank');
 // ── Streaks ───────────────────────────────────
 export const getMyStreak  = () => API.get('/streaks/mine');
 
+export const getSchoolLeaderboard = () => API.get('/leaderboard/school');
+
 export default API;
