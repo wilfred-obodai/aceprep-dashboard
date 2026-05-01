@@ -45,6 +45,32 @@ export const getMyRank    = () => API.get('/leaderboard/my-rank');
 // ── Streaks ───────────────────────────────────
 export const getMyStreak  = () => API.get('/streaks/mine');
 
+// ── Announcements ─────────────────────────────
+export const createAnnouncement     = (data) => API.post('/announcements', data);
+export const getSchoolAnnouncements = ()     => API.get('/announcements/school');
+export const deleteAnnouncement     = (id)   => API.delete(`/announcements/${id}`);
+
+// ── Timetable ─────────────────────────────────
+export const createTimetableEntry   = (data) => API.post('/timetable', data);
+export const getSchoolTimetable     = ()     => API.get('/timetable/school');
+export const deleteTimetableEntry   = (id)   => API.delete(`/timetable/${id}`);
+
+// ── Analytics ─────────────────────────────────
+export const getSchoolAnalytics     = ()     => API.get('/leaderboard/school');
 export const getSchoolLeaderboard = () => API.get('/leaderboard/school');
+
+// ── Attendance ────────────────────────────────
+export const markAttendance      = (data) => API.post('/attendance', data);
+export const getSchoolAttendance = (params) => API.get('/attendance/school', { params });
+
+// ── Messages ──────────────────────────────────
+export const sendMessage  = (data) => API.post('/messages', data);
+export const getInbox     = ()     => API.get('/messages/inbox');
+export const getSent      = ()     => API.get('/messages/sent');
+export const markAsRead   = (id)   => API.put(`/messages/${id}/read`);
+
+// ── Materials ─────────────────────────────────
+export const getStudyMaterials   = ()     => API.get('/upload/materials');
+export const deleteStudyMaterial = (id)   => API.delete(`/upload/materials/${id}`);
 
 export default API;

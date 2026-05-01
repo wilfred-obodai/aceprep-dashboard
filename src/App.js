@@ -14,6 +14,14 @@ import Teachers from './pages/Teachers';
 import Assignments from './pages/Assignments';
 import AssignmentSubmissions from './pages/AssignmentSubmissions';
 import Leaderboard from './pages/Leaderboard';
+import Announcements      from './pages/Announcements';
+import Timetable          from './pages/Timetable';
+import Analytics          from './pages/Analytics';
+import AIQuestionGenerator from './pages/AIQuestionGenerator';
+import Attendance    from './pages/Attendance';
+import Messages      from './pages/Messages';
+import StudyMaterials from './pages/StudyMaterials';
+import Settings      from './pages/Settings';
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
@@ -61,7 +69,14 @@ const App = () => {
           } />
           <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/" />} />
-          
+          <Route path="/announcements"  element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
+          <Route path="/timetable"      element={<ProtectedRoute><Timetable /></ProtectedRoute>} />
+          <Route path="/analytics"      element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="/ai-questions"   element={<ProtectedRoute><AIQuestionGenerator /></ProtectedRoute>} />
+          <Route path="/attendance"      element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
+          <Route path="/messages"        element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+          <Route path="/study-materials" element={<ProtectedRoute><StudyMaterials /></ProtectedRoute>} />
+          <Route path="/settings"        element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

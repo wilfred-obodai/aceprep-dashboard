@@ -1,7 +1,31 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FaHome, FaUsers, FaChartBar, FaSignOutAlt, FaClipboardList, FaChalkboardTeacher, FaBook, FaTrophy } from 'react-icons/fa';
+import {
+  FaHome, FaUsers, FaChartBar, FaSignOutAlt,
+  FaClipboardList, FaChalkboardTeacher, FaBook,
+  FaTrophy, FaBullhorn, FaCalendar, FaRobot,
+  FaChartPie, FaClipboardCheck, FaComments,
+  FaBookOpen, FaCog
+} from 'react-icons/fa';
+
+const links = [
+  { path: '/',               label: 'Dashboard',    icon: <FaHome /> },
+  { path: '/students',       label: 'Students',     icon: <FaUsers /> },
+  { path: '/grades',         label: 'Grades',       icon: <FaChartBar /> },
+  { path: '/exams',          label: 'Exams',        icon: <FaClipboardList /> },
+  { path: '/assignments',    label: 'Assignments',  icon: <FaBook /> },
+  { path: '/attendance',     label: 'Attendance',   icon: <FaClipboardCheck /> },
+  { path: '/announcements',  label: 'Announce',     icon: <FaBullhorn /> },
+  { path: '/timetable',      label: 'Timetable',    icon: <FaCalendar /> },
+  { path: '/messages',       label: 'Messages',     icon: <FaComments /> },
+  { path: '/study-materials',label: 'Materials',    icon: <FaBookOpen /> },
+  { path: '/leaderboard',    label: 'Leaderboard',  icon: <FaTrophy /> },
+  { path: '/analytics',      label: 'Analytics',    icon: <FaChartPie /> },
+  { path: '/ai-questions',   label: 'AI Questions', icon: <FaRobot /> },
+  { path: '/teachers',       label: 'Teachers',     icon: <FaChalkboardTeacher /> },
+  { path: '/settings',       label: 'Settings',     icon: <FaCog /> },
+];
 
 const Sidebar = () => {
   const { logout, user } = useAuth();
