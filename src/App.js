@@ -22,6 +22,9 @@ import Attendance    from './pages/Attendance';
 import Messages      from './pages/Messages';
 import StudyMaterials from './pages/StudyMaterials';
 import Settings      from './pages/Settings';
+import VideoRooms    from './pages/VideoRooms';
+import XPLeaderboard from './pages/XPLeaderboard';
+
 
 const ProtectedRoute = ({ children }) => {
   const { token } = useAuth();
@@ -77,6 +80,8 @@ const App = () => {
           <Route path="/messages"        element={<ProtectedRoute><Messages /></ProtectedRoute>} />
           <Route path="/study-materials" element={<ProtectedRoute><StudyMaterials /></ProtectedRoute>} />
           <Route path="/settings"        element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/video-rooms"    element={<ProtectedRoute><VideoRooms /></ProtectedRoute>} />
+          <Route path="/xp-leaderboard" element={<ProtectedRoute><XPLeaderboard /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

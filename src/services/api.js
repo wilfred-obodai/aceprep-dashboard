@@ -73,4 +73,15 @@ export const markAsRead   = (id)   => API.put(`/messages/${id}/read`);
 export const getStudyMaterials   = ()     => API.get('/upload/materials');
 export const deleteStudyMaterial = (id)   => API.delete(`/upload/materials/${id}`);
 
+// ── XP Leaderboard ────────────────────────────
+export const getXPLeaderboard     = ()     => API.get('/xp/school-leaderboard');
+
+// ── Analytics ─────────────────────────────────
+export const getStudentAnalytics  = (id)   => API.get(`/analytics/student/${id}`);
+
+// ── Video Rooms ───────────────────────────────
+export const createVideoRoom      = (data) => API.post('/video-rooms', data);
+export const getSchoolVideoRooms  = ()     => API.get('/video-rooms/school');
+export const deleteVideoRoom      = (id)   => API.delete(`/video-rooms/${id}`);
+
 export default API;
